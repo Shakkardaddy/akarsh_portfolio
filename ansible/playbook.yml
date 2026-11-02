@@ -1,0 +1,85 @@
+---
+- name: Provision and Configure Web Servers, Containers & Observability Stack
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - git
+          - ufw
+        state: present
+
+    - name: Add Docker official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository to APT sources
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker and Docker Compose Plugin
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+
+    - name: Ensure Docker service is enabled and running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    # ---------------- DEPLOY WEB APPLICATION (BOTH VMS) ----------------
+    - name: Pull Frontend Web Application Container from Docker Hub
+      docker_image:
+        name: "shakkardaddy1/portfolio:v2"
+        source: pull
+
+    - name: Run Frontend Web Server Container on Port 8080
+      docker_container:
+        name: portfolio-web
+        image: "shakkardaddy1/portfolio:v2"
+        state: started
+        restart_policy: always
+        published_ports:
+          - "8080:80"
+
+    # ---------------- OBSERVABILITY, PRESTASHOP & ELK (VM 2) ----------------
+    - name: Create monitoring and prestashop directory on VM 2
+      file:
+        path: /opt/stack
+        state: directory
+        mode: '0755'
+      when: role_type == 'secondary'
+
+    - name: Copy Stack Compose File to VM 2
+      copy:
+        src: ../monitoring/docker-compose-stack.yml
+        dest: /opt/stack/docker-compose.yml
+      when: role_type == 'secondary'
+
+    - name: Deploy PrestaShop, Grafana, and ELK on VM 2
+      shell: "docker compose -f /opt/stack/docker-compose.yml up -d"
+      when: role_type == 'secondary'

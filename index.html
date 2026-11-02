@@ -12,11 +12,13 @@
 <body>
 <header>
 <div class="nav">
-<h2>Akarsh.</h2>
+<h2>Akarsh. <span style="background:#6ee7b7;color:#000;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;vertical-align:middle;">v2.0</span></h2>
 <nav>
 <a href="#about">About</a>
 <a href="#projects">Projects</a>
 <a href="#contact">Contact</a>
+<button class="pay-btn-highlight" style="padding:6px 14px;border-radius:8px;font-size:13px;margin-left:15px;" onclick="openPaymentModal()">Pay / Hire (₹)</button>
+<button id="authBtn" class="auth-nav-btn" onclick="openAuthModal()">Sign In</button>
 </nav>
 </div>
 <div class="hero">
@@ -25,6 +27,7 @@
 <p class="sub">I'm an Integrated M.Tech student at VIT-AP exploring React, AI, Computer Vision and modern UI design. I also create cinematic edits and digital content.</p>
 <div class="buttons">
 <a class="btn" href="#projects">View Projects</a>
+<button class="btn pay-btn-highlight" onclick="openPaymentModal()" style="border:none;">Hire / Support Me (₹)</button>
 <a class="ghost" href="#">Resume</a>
 </div>
 </div>
@@ -37,6 +40,7 @@
 <span>React</span><span>Next.js</span><span>JavaScript</span><span>Tailwind</span>
 <span>Flask</span><span>YOLO</span><span>OpenCV</span><span>EasyOCR</span>
 <span>Firebase</span><span>Supabase</span><span>Figma</span>
+<span>Docker</span><span>DevOps</span>
 </div>
 </section>
 
@@ -75,6 +79,22 @@
 <p><strong>Integrated M.Tech</strong><br>VIT-AP University</p>
 </section>
 
+<section id="support">
+<h2>Support & Freelance Consulting</h2>
+<div class="card" style="border: 1px solid #0284c7; background: linear-gradient(180deg, #0e1726 0%, #141414 100%); padding: 32px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+    <div>
+      <span class="badge-sandbox" style="margin-bottom:10px; display:inline-block;">💳 Razorpay Payment Gateway Integrated</span>
+      <h3 style="color:#38bdf8; font-size:22px; margin-bottom:8px;">Hire Me or Fund My AI/DevOps Projects</h3>
+      <p style="color:#aaa; max-width:620px;">Direct checkout powered by Razorpay. Choose a contribution tier or specify custom consulting fees to generate orders, execute transactions, and receive cryptographically verified payment receipts.</p>
+    </div>
+    <button class="pay-btn-highlight" onclick="openPaymentModal()" style="padding:14px 26px; border-radius:10px; font-size:16px;">
+      Open Razorpay Checkout (₹)
+    </button>
+  </div>
+</div>
+</section>
+
 <section id="contact">
 <h2>Let's Connect</h2>
 <p>I'm always interested in collaborating on creative frontend or AI projects.</p>
@@ -83,6 +103,135 @@
 <p>LinkedIn: linkedin.com/in/yourusername</p>
 </section>
 
-<footer>© 2026 Akarsh. Built with curiosity.</footer>
+<footer>© 2026 Akarsh. Built with curiosity • v2.0 (Dockerized)</footer>
+
+<!-- Auth & MFA Modal -->
+<div id="authModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="modalTitle">Account Access</h3>
+      <span class="modal-close" onclick="closeAuthModal()">&times;</span>
+    </div>
+    
+    <!-- State 1: Unauthenticated -->
+    <div id="authStateLogin">
+      <p style="color:#aaa; font-size:14px; margin-bottom: 20px;">Authenticate with GitHub to access the portfolio admin dashboard and configure Multi-Factor Authentication (MFA).</p>
+      <a href="/auth/github" class="oauth-btn github-btn">
+        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Sign in with GitHub
+      </a>
+    </div>
+
+    <!-- State 2: MFA Code Verification Required -->
+    <div id="authStateMfaPending" style="display:none;">
+      <p style="color:#aaa; font-size:14px; margin-bottom: 15px;">Two-Factor Authentication is enabled on your account. Enter the 6-digit code from Google Authenticator:</p>
+      <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <input type="text" id="mfaVerifyCode" placeholder="000000" maxlength="6" class="mfa-input" autocomplete="one-time-code">
+        <button onclick="verifyMfaCode()" class="btn" style="padding:10px 18px;">Verify</button>
+      </div>
+      <p id="mfaVerifyMsg" style="font-size:13px;"></p>
+    </div>
+
+    <!-- State 3: Authenticated Dashboard & MFA Settings -->
+    <div id="authStateDashboard" style="display:none;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+        <img id="userAvatar" src="" style="width:48px; height:48px; border-radius:50%; border:2px solid #6ee7b7;">
+        <div>
+          <h4 id="userName" style="font-size:16px;"></h4>
+          <span id="userStatus" class="badge-mfa"></span>
+        </div>
+      </div>
+
+      <div class="mfa-box">
+        <h4 style="margin-bottom:8px; font-size:15px;">Multi-Factor Authentication (MFA)</h4>
+        <div id="mfaInactiveSection">
+          <p style="color:#aaa; font-size:13px; margin-bottom:12px;">Add an extra layer of security using an authenticator app (Google Authenticator, Authy, etc.).</p>
+          <button onclick="setupMfa()" class="btn" style="font-size:13px; padding:8px 16px;">Enable MFA (TOTP)</button>
+        </div>
+
+        <div id="mfaSetupSection" style="display:none; margin-top:15px; text-align:center;">
+          <p style="color:#6ee7b7; font-size:13px; margin-bottom:10px;">1. Scan this QR code with your authenticator app:</p>
+          <img id="mfaQrImg" src="" style="width:160px; height:160px; border-radius:8px; background:#fff; padding:6px; margin:0 auto 10px;">
+          <p style="color:#888; font-size:12px; margin-bottom:12px;">Or enter code manually: <code id="mfaSecretText" style="color:#6ee7b7;"></code></p>
+          <div style="display:flex; gap:8px; justify-content:center;">
+            <input type="text" id="mfaSetupCode" placeholder="Enter 6-digit code" maxlength="6" class="mfa-input">
+            <button onclick="confirmMfaSetup()" class="btn" style="padding:8px 16px;">Activate</button>
+          </div>
+          <p id="mfaSetupMsg" style="font-size:12px; margin-top:8px;"></p>
+        </div>
+
+        <div id="mfaActiveSection" style="display:none;">
+          <p style="color:#6ee7b7; font-size:13px; margin-bottom:10px;">✓ MFA is currently active and protecting your sessions.</p>
+          <button onclick="disableMfa()" class="ghost" style="color:#f87171; border-color:#f87171; font-size:12px; padding:6px 14px;">Disable MFA</button>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; text-align:right;">
+        <button onclick="logout()" class="ghost" style="font-size:13px; padding:8px 18px;">Sign Out</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Razorpay Payment Modal -->
+<div id="paymentModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#0284c7"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+        <h3 style="font-size:18px;">Razorpay Gateway</h3>
+      </div>
+      <span class="modal-close" onclick="closePaymentModal()">&times;</span>
+    </div>
+
+    <!-- Initial Payment Form -->
+    <div id="payInitialState">
+      <p style="color:#aaa; font-size:13px; margin-bottom:12px;">Support my open-source projects or hire me for freelance AI & web development work.</p>
+      
+      <label style="font-size:12px; color:#888; text-transform:uppercase; letter-spacing:1px; font-weight:600;">Select Amount (INR)</label>
+      <div class="amount-chips">
+        <div class="amount-chip selected" onclick="selectAmount(500, this)">₹500</div>
+        <div class="amount-chip" onclick="selectAmount(1000, this)">₹1,000</div>
+        <div class="amount-chip" onclick="selectAmount(2500, this)">₹2,500</div>
+      </div>
+
+      <input type="number" id="customAmountInput" value="500" class="pay-input" placeholder="Custom Amount in INR">
+      <input type="text" id="payNameInput" class="pay-input" placeholder="Your Name (e.g. John Doe)">
+      <input type="email" id="payEmailInput" class="pay-input" placeholder="Your Email Address">
+
+      <button id="btnSubmitPayment" onclick="initiatePayment()" class="pay-btn-highlight" style="width:100%; padding:14px; border-radius:10px; font-size:15px; margin-top:5px;">
+        Proceed to Pay with Razorpay
+      </button>
+
+      <p id="payErrorMsg" style="color:#ef4444; font-size:13px; margin-top:10px; text-align:center;"></p>
+      <p style="color:#666; font-size:11px; margin-top:10px; text-align:center;">🔒 256-bit encrypted • Razorpay Secure Checkout</p>
+    </div>
+
+    <!-- Payment Success Receipt -->
+    <div id="paySuccessState" style="display:none; text-align:center;">
+      <div style="width:60px; height:60px; border-radius:50%; background:rgba(110,231,183,0.15); display:flex; align-items:center; justify-content:center; margin:0 auto 15px; border:2px solid #6ee7b7;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#6ee7b7"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <h3 style="color:#6ee7b7; font-size:20px; margin-bottom:6px;">Payment Received!</h3>
+      <span id="receiptModeBadge" class="badge-sandbox">Sandbox Demo Mode</span>
+      <p style="color:#aaa; font-size:13px; margin:15px 0;">Thank you for your support and partnership!</p>
+
+      <div style="background:#1b1b1b; border:1px solid #2e2e2e; border-radius:10px; padding:15px; text-align:left; font-size:13px; line-height:1.8;">
+        <div style="display:flex; justify-content:space-between;"><span style="color:#888;">Amount Paid:</span><strong id="receiptAmount" style="color:#6ee7b7;">₹500</strong></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#888;">Order ID:</span><code id="receiptOrderId" style="font-size:11px; color:#aaa;"></code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#888;">Payment ID:</span><code id="receiptPaymentId" style="font-size:11px; color:#aaa;"></code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#888;">Status:</span><span style="color:#6ee7b7; font-weight:600;">Captured / Verified</span></div>
+      </div>
+
+      <button onclick="closePaymentModal()" class="btn" style="margin-top:20px; width:100%; padding:12px; font-size:14px;">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="payment.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>

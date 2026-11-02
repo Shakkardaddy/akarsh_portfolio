@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'portfolio_web'
+    static_configs:
+      - targets: ['portfolio-web:80']
+
+  - job_name: 'prestashop_container'
+    static_configs:
+      - targets: ['prestashop-app:80']

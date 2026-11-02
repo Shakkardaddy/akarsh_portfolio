@@ -1,0 +1,34 @@
+services:
+  # 1. Frontend Web & Reverse Proxy Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portfolio-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - auth-service
+    networks:
+      - portfolio-net
+    restart: always
+
+  # 2. Node.js Authentication & MFA API Service
+  auth-service:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: portfolio-auth
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=5000
+      - FRONTEND_URL=http://localhost:8080
+      - GITHUB_CALLBACK_URL=http://localhost:8080/auth/github/callback
+    networks:
+      - portfolio-net
+    restart: always
+
+networks:
+  portfolio-net:
+    driver: bridge
