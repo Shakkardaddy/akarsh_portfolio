@@ -1,0 +1,26 @@
+Issue Type,Issue key,Summary,Description,Story Points,Status,Epic Link
+Epic,SEC-100,Identity & Multi-Factor Security,GitHub OAuth 2.0 and TOTP MFA security implementation,,Done,
+Story,SEC-101,GitHub OAuth 2.0 Authentication,As a user I want to authenticate via GitHub OAuth 2.0 so that I can securely log into my portfolio dashboard.,5,Done,SEC-100
+Story,SEC-102,TOTP Multi-Factor Authentication with QR Code,As an admin I want to configure Time-Based One-Time Passwords with a QR code so that my session is protected by 2FA.,8,Done,SEC-100
+Task,SEC-103,Cryptographic Session Validation,Implement cryptographic session validation and MFA challenge modal before unlocking privileged controls.,3,Done,SEC-100
+Epic,PAY-200,Razorpay Payment Gateway,Monetization and payment processing system,,Done,
+Story,PAY-201,Contribution Tier Selection UI,As a client/supporter I want to select a contribution tier (500 1000 2500) or enter a custom amount.,5,Done,PAY-200
+Story,PAY-202,Razorpay Order Creation API,As a backend service I want to create Razorpay orders via /api/pay/order using official credentials.,5,Done,PAY-200
+Story,PAY-203,HMAC SHA-256 Payment Verification,As a backend service I want to verify Razorpay payment signatures using HMAC SHA-256 to prevent tampering.,5,Done,PAY-200
+Story,PAY-204,Payment Receipt & Confirmation Modal,As a client I want an on-screen verified receipt showing Order ID Payment ID and Captured status.,3,Done,PAY-200
+Epic,INFRA-300,Cloud Infrastructure as Code,AWS VPC subnets and multi-VM Terraform configuration,,Done,
+Story,INFRA-301,Terraform AWS VPC & Subnets,As a DevOps engineer I want Terraform to provision a custom VPC with 2 public subnets in ap-south-1.,8,Done,INFRA-300
+Story,INFRA-302,Multi-VM Architecture with Different IPs,As a reviewer I want 2 distinct EC2 instances running with different public IPs serving web applications.,5,Done,INFRA-300
+Task,INFRA-303,Automated Security Groups & Networking,Configure automated Security Groups for HTTP HTTPS 8080 3000 5601 8085 and 9090.,5,Done,INFRA-300
+Epic,K8S-400,Kubernetes Container Orchestration,Container orchestration on AWS EC2,,Done,
+Story,K8S-401,K3s / Minikube Cluster Provisioning,As a platform team I want to run a lightweight K3s/Minikube cluster directly on AWS EC2.,8,Done,K8S-400
+Story,K8S-402,High Availability Deployments & Services,As an operator I want Deployments with 2 replicas each for frontend and auth services.,8,Done,K8S-400
+Task,K8S-403,Traefik Ingress Controller Configuration,Configure Traefik Ingress routing port 80 traffic into cluster services with zero downtime.,5,Done,K8S-400
+Epic,OBS-500,Observability E-Commerce & Logging,Centralized metrics logging and e-commerce stack,,Done,
+Story,OBS-501,PrestaShop E-Commerce Container with MySQL,As an e-commerce lead I want containerized PrestaShop deployed with a dedicated MySQL database on Port 8085.,8,Done,OBS-500
+Story,OBS-502,Prometheus Metrics & Grafana Dashboards,As an SRE I want Prometheus scraping system metrics and Grafana displaying real-time dashboards on Port 3000.,8,Done,OBS-500
+Story,OBS-503,ELK Stack Centralized Logging (Elasticsearch + Kibana),As an engineer I want Elasticsearch and Kibana running on Port 5601 for centralized log ingestion.,8,Done,OBS-500
+Epic,EDGE-600,Custom Domain Edge CDN & SSL/TLS,Domain registration Cloudflare routing and SSL termination,,Done,
+Story,EDGE-601,Domain Registration on GoDaddy (xixi.co.in),As a product owner I want custom domain xixi.co.in registered and configured with nameservers.,3,Done,EDGE-600
+Story,EDGE-602,Cloudflare Edge DNS & Automatic SSL/TLS,As a network engineer I want Cloudflare Edge DNS proxying traffic with Automatic HTTPS and DDoS mitigation.,3,Done,EDGE-600
+Task,EDGE-603,GitHub OAuth Production Domain Callback,Connect domain to GitHub OAuth application redirect callback for production user login.,2,Done,EDGE-600
