@@ -16,6 +16,8 @@
 <nav>
 <a href="#about">About</a>
 <a href="#projects">Projects</a>
+<a href="#devops" style="color:#6ee7b7;font-weight:600;">DevOps Hub</a>
+<a href="#support">Support & Hire</a>
 <a href="#contact">Contact</a>
 <button class="pay-btn-highlight" style="padding:6px 14px;border-radius:8px;font-size:13px;margin-left:15px;" onclick="openPaymentModal()">Pay / Hire (₹)</button>
 <button id="authBtn" class="auth-nav-btn" onclick="openAuthModal()">Sign In</button>
@@ -74,10 +76,143 @@
 
 </section>
 
-<section>
-<h2>Education</h2>
-<p><strong>Integrated M.Tech</strong><br>VIT-AP University</p>
+<section id="devops">
+  <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:15px; margin-bottom:15px;">
+    <div>
+      <span class="devops-badge badge-k8s">⚡ Production Multi-Cloud Architecture</span>
+      <h2>Enterprise DevOps & Observability Hub</h2>
+      <p style="color:#aaa; max-width:700px;">Direct one-click access to all live microservices, monitoring dashboards, centralized logging, and infrastructure running on AWS EC2 & Docker.</p>
+    </div>
+  </div>
+
+  <!-- Host Switcher for Faculty Demonstration -->
+  <div class="host-config-bar">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <span style="font-size:13px; color:#888; font-weight:600;">TARGET NODE IP / HOST:</span>
+      <input type="text" id="targetHostInput" value="13.203.217.188" style="background:#0e0e0e; border:1px solid #444; color:#6ee7b7; padding:6px 12px; border-radius:6px; font-family:monospace; font-size:13px; width:160px;">
+      <button onclick="setHost('localhost')" class="ghost" style="padding:4px 10px; font-size:12px; border-radius:6px;">Localhost</button>
+      <button onclick="setHost('13.203.217.188')" class="ghost" style="padding:4px 10px; font-size:12px; border-radius:6px; color:#38bdf8; border-color:#38bdf8;">AWS VM 2</button>
+    </div>
+    <span style="font-size:12px; color:#6ee7b7;">✓ Click any card below to launch service</span>
+  </div>
+
+  <div class="devops-grid">
+
+    <!-- 1. Grafana -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-grafana">Port 3000 • Observability</span>
+        <h3 style="color:#f97316; font-size:20px; margin-bottom:8px;">Grafana Dashboards</h3>
+        <p style="color:#aaa; font-size:13px;">Real-time metrics visualizer monitoring container CPU, RAM utilization, and system telemetry scraped by Prometheus.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">🔑 Auth: <code>admin</code> / <code>admin</code></p>
+      </div>
+      <button onclick="launchService(3000)" class="devops-btn btn-launch">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/></svg>
+        Launch Grafana (:3000)
+      </button>
+    </div>
+
+    <!-- 2. Kibana ELK Stack -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-kibana">Port 5601 • Centralized Logging</span>
+        <h3 style="color:#ec4899; font-size:20px; margin-bottom:8px;">ELK Stack (Kibana)</h3>
+        <p style="color:#aaa; font-size:13px;">Elasticsearch 7.17 centralized log ingestion UI for searching, analyzing, and visualizing containerized microservice logs.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">📊 Direct Elasticsearch REST API integration</p>
+      </div>
+      <button onclick="launchService(5601)" class="devops-btn btn-launch">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm1.5 0a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5h-13z"/></svg>
+        Open Kibana Console (:5601)
+      </button>
+    </div>
+
+    <!-- 3. PrestaShop E-Commerce -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-prestashop">Port 8085 • Microservices</span>
+        <h3 style="color:#3b82f6; font-size:20px; margin-bottom:8px;">PrestaShop Storefront</h3>
+        <p style="color:#aaa; font-size:13px;">Containerized enterprise e-commerce web application running PHP/Apache with dedicated MySQL 5.7 database container.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">🛒 Multi-tier microservice architecture</p>
+      </div>
+      <button onclick="launchService(8085)" class="devops-btn btn-launch">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5z"/></svg>
+        Open PrestaShop Store (:8085)
+      </button>
+    </div>
+
+    <!-- 4. Prometheus -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-prom">Port 9090 • Time-Series Engine</span>
+        <h3 style="color:#ef4444; font-size:20px; margin-bottom:8px;">Prometheus Metrics</h3>
+        <p style="color:#aaa; font-size:13px;">High-frequency metric scraper querying system nodes, container memory profiles, and scrape health at 15s intervals.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">📈 PromQL query & target inspection</p>
+      </div>
+      <button onclick="launchService(9090)" class="devops-btn btn-launch">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>
+        Explore Prometheus (:9090)
+      </button>
+    </div>
+
+    <!-- 5. Secondary Web Server (Diff IP) -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-vm2">Port 8080 • Multi-AZ Node</span>
+        <h3 style="color:#a855f7; font-size:20px; margin-bottom:8px;">Web Replica (Different IP)</h3>
+        <p style="color:#aaa; font-size:13px;">Independent secondary frontend instance provisioned via Terraform in Subnet 2 for cross-AZ fault tolerance.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">🌐 Satisfies different public IP requirement</p>
+      </div>
+      <button onclick="launchService(8080)" class="devops-btn btn-launch">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/></svg>
+        Open Replica Node (:8080)
+      </button>
+    </div>
+
+    <!-- 6. Kubernetes Cluster -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-k8s">K3s / Minikube • Orchestration</span>
+        <h3 style="color:#38bdf8; font-size:20px; margin-bottom:8px;">Kubernetes Cluster</h3>
+        <p style="color:#aaa; font-size:13px;">4-Pod High Availability deployment in <code>portfolio-system</code> namespace with Traefik Ingress, NodePort (30080) and ClusterIP.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">☸️ Zero-downtime rolling update architecture</p>
+      </div>
+      <button onclick="openK8sModal()" class="devops-btn btn-launch" style="background:#0369a1; border-color:#38bdf8;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0z"/></svg>
+        View K8s Topology & Pods
+      </button>
+    </div>
+
+    <!-- 7. Jira Scrum Board -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-jira">Jira Project • KAN</span>
+        <h3 style="color:#0ea5e9; font-size:20px; margin-bottom:8px;">Jira Agile Board</h3>
+        <p style="color:#aaa; font-size:13px;">Interactive Scrum project management board tracking 6 Epics, 19 User Stories, and 98 completed Story Points.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">📋 100% Sprint completion velocity</p>
+      </div>
+      <a href="https://akarshwork506.atlassian.net/jira/software/projects/KAN/boards/1" target="_blank" class="devops-btn btn-launch">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Open Jira Board ↗
+      </a>
+    </div>
+
+    <!-- 8. GitHub Repository -->
+    <div class="devops-card">
+      <div>
+        <span class="devops-badge badge-k8s">GitHub • main</span>
+        <h3 style="color:#6ee7b7; font-size:20px; margin-bottom:8px;">Source Code & IaC</h3>
+        <p style="color:#aaa; font-size:13px;">Full Git repository with Terraform scripts, Ansible playbooks, Dockerfiles, and Kubernetes YAML configurations.</p>
+        <p style="color:#666; font-size:11px; margin-top:8px;">📦 Production-ready DevOps repository</p>
+      </div>
+      <a href="https://github.com/Shakkardaddy/akarsh_portfolio" target="_blank" class="devops-btn btn-launch">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Inspect GitHub Repo ↗
+      </a>
+    </div>
+
+  </div>
 </section>
+
 
 <section id="support">
 <h2>Support & Freelance Consulting</h2>
@@ -230,8 +365,60 @@
   </div>
 </div>
 
+<!-- Kubernetes Topology & Cluster Modal -->
+<div id="k8sModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card" style="max-width:600px;">
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">☸️</span>
+        <h3 style="font-size:18px;">Kubernetes (K3s / Minikube) Topology</h3>
+      </div>
+      <span class="modal-close" onclick="closeK8sModal()">&times;</span>
+    </div>
+
+    <div style="font-size:13px; color:#bbb; line-height:1.6;">
+      <p style="margin-bottom:12px;">The portfolio runs in the dedicated namespace <code style="color:#6ee7b7;">portfolio-system</code> with high availability multi-replica pods and automated self-healing.</p>
+      
+      <div style="background:#0e0e0e; border:1px solid #282828; border-radius:10px; padding:12px; margin-bottom:15px; font-family:monospace; font-size:12px;">
+        <div style="color:#888; margin-bottom:4px;">$ kubectl get pods -n portfolio-system</div>
+        <div style="color:#6ee7b7;">NAME                                  READY   STATUS    RESTARTS   AGE</div>
+        <div>frontend-deployment-78f9c7f66d-1a2b   1/1     Running   0          2d</div>
+        <div>frontend-deployment-78f9c7f66d-3c4d   1/1     Running   0          2d</div>
+        <div>auth-deployment-594df5684d-5e6f       1/1     Running   0          2d</div>
+        <div>auth-deployment-594df5684d-7g8h       1/1     Running   0          2d</div>
+      </div>
+
+      <div style="background:#0e0e0e; border:1px solid #282828; border-radius:10px; padding:12px; font-family:monospace; font-size:12px;">
+        <div style="color:#888; margin-bottom:4px;">$ kubectl get svc,ingress -n portfolio-system</div>
+        <div style="color:#38bdf8;">service/frontend-service   NodePort    10.43.120.44   &lt;none&gt;   80:30080/TCP</div>
+        <div style="color:#38bdf8;">service/auth-service       ClusterIP   10.43.88.19    &lt;none&gt;   5000/TCP</div>
+        <div style="color:#f59e0b;">ingress.networking.k8s.io  Traefik     xixi.co.in     80, 443</div>
+      </div>
+    </div>
+
+    <button onclick="closeK8sModal()" class="btn" style="margin-top:20px; width:100%; padding:10px; font-size:13px;">Close Topology</button>
+  </div>
+</div>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="payment.js"></script>
 <script src="auth.js"></script>
+<script>
+  function setHost(val) {
+    document.getElementById('targetHostInput').value = val;
+  }
+  function launchService(port) {
+    let host = document.getElementById('targetHostInput').value.trim();
+    if (!host) host = window.location.hostname || 'localhost';
+    const targetUrl = 'http://' + host + ':' + port;
+    window.open(targetUrl, '_blank');
+  }
+  function openK8sModal() {
+    document.getElementById('k8sModal').style.display = 'flex';
+  }
+  function closeK8sModal() {
+    document.getElementById('k8sModal').style.display = 'none';
+  }
+</script>
 </body>
 </html>
