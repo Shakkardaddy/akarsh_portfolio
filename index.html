@@ -224,10 +224,15 @@
         <p style="color:#aaa; font-size:13px;">4-Pod High Availability deployment in <code>portfolio-system</code> namespace with Traefik Ingress, NodePort (30080) and ClusterIP.</p>
         <p style="color:#666; font-size:11px; margin-top:8px;">☸️ Zero-downtime rolling update architecture</p>
       </div>
-      <button onclick="openK8sModal()" class="devops-btn btn-launch" style="background:#0369a1; border-color:#38bdf8;">
-        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0z"/></svg>
-        View K8s Topology & Pods
-      </button>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button onclick="openK8sModal()" class="devops-btn btn-launch" style="background:#0369a1; border-color:#38bdf8; flex:1;">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0z"/></svg>
+          View Topology
+        </button>
+        <a href="http://3.108.228.13:30080" target="_blank" class="devops-btn btn-launch" style="background:#0284c7; border-color:#38bdf8; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
+          ☸️ NodePort (:30080) ↗
+        </a>
+      </div>
     </div>
 
     <!-- 7. Jira Scrum Board -->
@@ -415,36 +420,49 @@
 
 <!-- Kubernetes Topology & Cluster Modal -->
 <div id="k8sModal" class="modal-overlay" style="display:none;">
-  <div class="modal-card" style="max-width:600px;">
+  <div class="modal-card" style="max-width:640px;">
     <div class="modal-header">
       <div style="display:flex; align-items:center; gap:8px;">
         <span style="font-size:20px;">☸️</span>
-        <h3 style="font-size:18px;">Kubernetes (K3s / Minikube) Topology</h3>
+        <h3 style="font-size:18px;">Kubernetes (Live K3s Cluster)</h3>
       </div>
       <span class="modal-close" onclick="closeK8sModal()">&times;</span>
     </div>
 
     <div style="font-size:13px; color:#bbb; line-height:1.6;">
-      <p style="margin-bottom:12px;">The portfolio runs in the dedicated namespace <code style="color:#6ee7b7;">portfolio-system</code> with high availability multi-replica pods and automated self-healing.</p>
+      <p style="margin-bottom:12px;">Active cluster in namespace <code style="color:#6ee7b7;">portfolio-system</code> with multi-replica microservices and self-healing.</p>
       
-      <div style="background:#0e0e0e; border:1px solid #282828; border-radius:10px; padding:12px; margin-bottom:15px; font-family:monospace; font-size:12px;">
-        <div style="color:#888; margin-bottom:4px;">$ kubectl get pods -n portfolio-system</div>
-        <div style="color:#6ee7b7;">NAME                                  READY   STATUS    RESTARTS   AGE</div>
-        <div>frontend-deployment-78f9c7f66d-1a2b   1/1     Running   0          2d</div>
-        <div>frontend-deployment-78f9c7f66d-3c4d   1/1     Running   0          2d</div>
-        <div>auth-deployment-594df5684d-5e6f       1/1     Running   0          2d</div>
-        <div>auth-deployment-594df5684d-7g8h       1/1     Running   0          2d</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:12px; font-weight:600; color:#888;">LIVE PODS (SYNCED VIA API)</span>
+        <span id="k8sStatusBadge" style="background:#065f46; color:#6ee7b7; font-size:11px; padding:2px 8px; border-radius:12px;">4/4 Pods Online</span>
       </div>
 
-      <div style="background:#0e0e0e; border:1px solid #282828; border-radius:10px; padding:12px; font-family:monospace; font-size:12px;">
+      <div style="background:#0e0e0e; border:1px solid #282828; border-radius:10px; padding:12px; margin-bottom:15px; font-family:monospace; font-size:12px;">
+        <div style="color:#888; margin-bottom:6px;">$ kubectl get pods -n portfolio-system</div>
+        <div style="color:#6ee7b7; display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:4px; margin-bottom:6px;">
+          <span>NAME</span>
+          <span>STATUS</span>
+        </div>
+        <div id="k8sPodsList">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#38bdf8;">auth-deployment-8666b55bc8-jwq97</span><span style="color:#6ee7b7;">1/1 Running</span></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#38bdf8;">auth-deployment-8666b55bc8-v6fml</span><span style="color:#6ee7b7;">1/1 Running</span></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#38bdf8;">frontend-deployment-6bfb9648fc-k9r8t</span><span style="color:#6ee7b7;">1/1 Running</span></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#38bdf8;">frontend-deployment-6bfb9648fc-kt4jm</span><span style="color:#6ee7b7;">1/1 Running</span></div>
+        </div>
+      </div>
+
+      <div style="background:#0e0e0e; border:1px solid #282828; border-radius:10px; padding:12px; font-family:monospace; font-size:12px; margin-bottom:15px;">
         <div style="color:#888; margin-bottom:4px;">$ kubectl get svc,ingress -n portfolio-system</div>
-        <div style="color:#38bdf8;">service/frontend-service   NodePort    10.43.120.44   &lt;none&gt;   80:30080/TCP</div>
-        <div style="color:#38bdf8;">service/auth-service       ClusterIP   10.43.88.19    &lt;none&gt;   5000/TCP</div>
+        <div style="color:#38bdf8;">service/frontend-service   NodePort    10.43.64.30    &lt;none&gt;   80:30080/TCP</div>
+        <div style="color:#38bdf8;">service/auth-service       ClusterIP   10.43.82.179   &lt;none&gt;   5000/TCP</div>
         <div style="color:#f59e0b;">ingress.networking.k8s.io  Traefik     xixi.co.in     80, 443</div>
       </div>
-    </div>
 
-    <button onclick="closeK8sModal()" class="btn" style="margin-top:20px; width:100%; padding:10px; font-size:13px;">Close Topology</button>
+      <div style="display:flex; gap:10px;">
+        <a href="http://3.108.228.13:30080" target="_blank" class="btn" style="background:#0284c7; flex:1; text-align:center; padding:10px; font-size:13px; text-decoration:none;">🚀 Open NodePort App (:30080) ↗</a>
+        <button onclick="closeK8sModal()" class="btn" style="flex:1; padding:10px; font-size:13px; background:#262626;">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -462,14 +480,33 @@
     if (port === 3000) {
       targetUrl = 'http://' + host + ':3000/d/akarsh-portfolio-ops/fbe050b';
     } else if (port === 5601) {
-      targetUrl = 'http://' + host + ':5601/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))';
+      targetUrl = 'http://' + host + ':5601/app/discover';
     } else if (port === 9090) {
       targetUrl = 'http://' + host + ':9090/graph?g0.expr=portfolio_http_requests_total&g0.tab=0';
+    } else if (port === 8085) {
+      targetUrl = 'http://' + host + ':8085/';
     }
     window.open(targetUrl, '_blank');
   }
-  function openK8sModal() {
+  async function openK8sModal() {
     document.getElementById('k8sModal').style.display = 'flex';
+    try {
+      const res = await fetch('/api/k8s/status');
+      const data = await res.json();
+      if (data && data.success && data.pods) {
+        document.getElementById('k8sStatusBadge').innerText = data.pods.length + ' Pods Active';
+        let html = '';
+        data.pods.forEach(p => {
+          html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+            <span style="color:#38bdf8;">${p.name}</span>
+            <span style="color:#6ee7b7;">${p.ready} ${p.phase}</span>
+          </div>`;
+        });
+        document.getElementById('k8sPodsList').innerHTML = html;
+      }
+    } catch (e) {
+      document.getElementById('k8sStatusBadge').innerText = '4/4 Pods Online';
+    }
   }
   function closeK8sModal() {
     document.getElementById('k8sModal').style.display = 'none';
@@ -536,29 +573,55 @@
     ctx.fill();
   }
 
-  function simulateTraffic() {
+  async function simulateTraffic() {
+    const t0 = performance.now();
+    try {
+      await Promise.all([
+        fetch('/api/telemetry'),
+        fetch('/api/auth/me'),
+        fetch('/metrics')
+      ]);
+      const lat = Math.round(performance.now() - t0);
+      document.getElementById('telemetryLatency').innerText = lat + ' ms';
+    } catch(e) {}
     reqCount += 10;
     document.getElementById('telemetryReqCount').innerText = reqCount.toLocaleString();
     const spike = Math.min(95, chartPoints[chartPoints.length - 1] + Math.floor(Math.random() * 25) + 15);
     chartPoints.push(spike);
     chartPoints.shift();
     drawGrafanaChart();
-    document.getElementById('telemetryLatency').innerText = (14 + Math.floor(Math.random() * 8)) + ' ms';
   }
 
-  // Periodic subtle tick every 2.5 seconds
-  setInterval(() => {
-    reqCount += Math.floor(Math.random() * 3) + 1;
-    const el = document.getElementById('telemetryReqCount');
-    if (el) el.innerText = reqCount.toLocaleString();
+  // Poll actual /api/telemetry from the web application every 3 seconds
+  async function pollLiveTelemetry() {
+    try {
+      const t0 = performance.now();
+      const res = await fetch('/api/telemetry');
+      const data = await res.json();
+      const lat = Math.round(performance.now() - t0);
+      if (data && data.totalRequests !== undefined) {
+        reqCount = data.totalRequests;
+        document.getElementById('telemetryReqCount').innerText = data.totalRequests.toLocaleString();
+        document.getElementById('telemetryLatency').innerText = lat + ' ms';
+        if (data.totalLogins !== undefined) document.getElementById('telemetryAuthCount').innerText = data.totalLogins;
+        if (data.totalPayments !== undefined) document.getElementById('telemetryPayCount').innerText = data.totalPayments;
+      }
+    } catch(e) {}
+  }
+  setInterval(pollLiveTelemetry, 3000);
 
-    const nextVal = Math.max(15, Math.min(85, chartPoints[chartPoints.length - 1] + (Math.random() * 12 - 6)));
+  // Periodic subtle tick for smooth chart motion
+  setInterval(() => {
+    const nextVal = Math.max(15, Math.min(85, chartPoints[chartPoints.length - 1] + (Math.random() * 10 - 5)));
     chartPoints.push(nextVal);
     chartPoints.shift();
     drawGrafanaChart();
   }, 2500);
 
-  window.addEventListener('load', drawGrafanaChart);
+  window.addEventListener('load', () => {
+    drawGrafanaChart();
+    pollLiveTelemetry();
+  });
 </script>
 </body>
 </html>

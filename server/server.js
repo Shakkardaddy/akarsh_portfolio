@@ -40,6 +40,36 @@ const paymentEventCounter = new client.Counter({
   registers: [register]
 });
 
+const http = require('http');
+
+// Ship real-time structured logs to Elasticsearch on VM 2
+function sendLogToElastic(level, message, meta = {}) {
+  try {
+    const payload = JSON.stringify({
+      '@timestamp': new Date().toISOString(),
+      service: 'akarsh-portfolio-webapp',
+      environment: 'production',
+      origin_node: 'VM 1 (3.108.228.13)',
+      level,
+      message,
+      ...meta
+    });
+    const req = http.request({
+      host: '65.0.199.163',
+      port: 9200,
+      path: '/portfolio-logs/_doc',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    });
+    req.on('error', () => {}); // Non-blocking
+    req.write(payload);
+    req.end();
+  } catch (e) {}
+}
+
 let totalRequests = 0;
 let totalLogins = 0;
 let totalPayments = 0;
@@ -51,15 +81,26 @@ const usersDb = {};
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Metrics tracking middleware
+// Metrics & Elasticsearch logging middleware
 app.use((req, res, next) => {
   totalRequests++;
+  const start = Date.now();
   res.on('finish', () => {
     httpRequestCounter.inc({
       method: req.method,
       route: req.route ? req.route.path : req.path,
       status_code: res.statusCode
     });
+    // Log non-static requests to Elasticsearch
+    if (!req.path.includes('.') && req.path !== '/metrics') {
+      sendLogToElastic('INFO', `${req.method} ${req.path} completed with ${res.statusCode}`, {
+        method: req.method,
+        path: req.path,
+        status_code: res.statusCode,
+        latency_ms: Date.now() - start,
+        client_ip: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress
+      });
+    }
   });
   next();
 });
@@ -235,8 +276,19 @@ app.post('/api/auth/mfa/verify', (req, res) => {
       user.tempMfaSecret = null;
     }
     req.session.mfaVerified = true;
+    totalLogins++;
+    authEventCounter.inc({ type: 'mfa', status: 'verified' });
+    sendLogToElastic('INFO', 'TOTP MFA verification successful with Google Authenticator', {
+      user: user.username,
+      mfa_verified: true
+    });
     return res.json({ success: true, message: 'MFA verified successfully!' });
   } else {
+    authEventCounter.inc({ type: 'mfa', status: 'invalid' });
+    sendLogToElastic('WARN', 'Failed TOTP MFA verification attempt', {
+      user: user.username,
+      mfa_verified: false
+    });
     return res.status(400).json({ success: false, error: 'Invalid 6-digit verification code' });
   }
 });
@@ -375,6 +427,47 @@ app.post('/api/pay/verify', (req, res) => {
     console.error('Error verifying payment:', err);
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+const { exec } = require('child_process');
+
+// Live Kubernetes Cluster status
+app.get('/api/k8s/status', (req, res) => {
+  exec('sudo k3s kubectl get pods -n portfolio-system -o json', (err, stdout, stderr) => {
+    if (err) {
+      return res.status(500).json({ success: false, error: stderr || err.message });
+    }
+    try {
+      const data = JSON.parse(stdout);
+      const pods = (data.items || []).map(p => {
+        const containerStatuses = p.status.containerStatuses || [];
+        const restarts = containerStatuses.reduce((acc, c) => acc + (c.restartCount || 0), 0);
+        const readyCount = containerStatuses.filter(c => c.ready).length;
+        const totalContainers = containerStatuses.length || 1;
+        return {
+          name: p.metadata.name,
+          phase: p.status.phase,
+          ready: `${readyCount}/${totalContainers}`,
+          restarts,
+          podIP: p.status.podIP || 'ClusterIP',
+          nodeName: p.spec.nodeName || 'vm1-k3s-master',
+          startTime: p.status.startTime,
+          labels: p.metadata.labels
+        };
+      });
+      res.json({
+        success: true,
+        namespace: 'portfolio-system',
+        cluster: 'K3s Production Cluster (AWS ap-south-1)',
+        nodePort: 30080,
+        nodePortUrl: 'http://3.108.228.13:30080',
+        podCount: pods.length,
+        pods
+      });
+    } catch (parseErr) {
+      res.status(500).json({ success: false, error: parseErr.message });
+    }
+  });
 });
 
 app.listen(PORT, () => {
