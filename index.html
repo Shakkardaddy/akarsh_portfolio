@@ -89,9 +89,9 @@
   <div class="host-config-bar">
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
       <span style="font-size:13px; color:#888; font-weight:600;">TARGET NODE IP / HOST:</span>
-      <input type="text" id="targetHostInput" value="13.203.217.188" style="background:#0e0e0e; border:1px solid #444; color:#6ee7b7; padding:6px 12px; border-radius:6px; font-family:monospace; font-size:13px; width:160px;">
+      <input type="text" id="targetHostInput" value="65.0.199.163" style="background:#0e0e0e; border:1px solid #444; color:#6ee7b7; padding:6px 12px; border-radius:6px; font-family:monospace; font-size:13px; width:160px;">
       <button onclick="setHost('localhost')" class="ghost" style="padding:4px 10px; font-size:12px; border-radius:6px;">Localhost</button>
-      <button onclick="setHost('13.203.217.188')" class="ghost" style="padding:4px 10px; font-size:12px; border-radius:6px; color:#38bdf8; border-color:#38bdf8;">AWS VM 2</button>
+      <button onclick="setHost('65.0.199.163')" class="ghost" style="padding:4px 10px; font-size:12px; border-radius:6px; color:#38bdf8; border-color:#38bdf8;">AWS VM 2</button>
     </div>
     <span style="font-size:12px; color:#6ee7b7;">✓ Click any card below to launch service</span>
   </div>
@@ -457,8 +457,15 @@
   }
   function launchService(port) {
     let host = document.getElementById('targetHostInput').value.trim();
-    if (!host) host = window.location.hostname || 'localhost';
-    const targetUrl = 'http://' + host + ':' + port;
+    if (!host) host = '65.0.199.163';
+    let targetUrl = 'http://' + host + ':' + port;
+    if (port === 3000) {
+      targetUrl = 'http://' + host + ':3000/d/akarsh-portfolio-ops/fbe050b';
+    } else if (port === 5601) {
+      targetUrl = 'http://' + host + ':5601/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))';
+    } else if (port === 9090) {
+      targetUrl = 'http://' + host + ':9090/graph?g0.expr=portfolio_http_requests_total&g0.tab=0';
+    }
     window.open(targetUrl, '_blank');
   }
   function openK8sModal() {
