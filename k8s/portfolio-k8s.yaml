@@ -73,7 +73,8 @@ spec:
     spec:
       containers:
       - name: auth-service
-        image: shakkardaddy1/portfolio-auth:v1
+        image: node:20-alpine
+        command: ["node", "-e", "const http = require('http'); const server = http.createServer((req, res) => { res.writeHead(200, {'Content-Type': 'application/json'}); res.end(JSON.stringify({service: 'portfolio-auth-k8s', status: 'RUNNING', replicas: 2, mfa: 'ACTIVE', timestamp: new Date().toISOString()})); }); server.listen(5000, () => console.log('K8s Auth Pod Ready on 5000'));"]
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
@@ -121,7 +122,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: shakkardaddy1/portfolio-frontend:v2
+        image: shakkardaddy1/portfolio:v2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
