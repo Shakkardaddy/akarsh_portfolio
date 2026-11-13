@@ -14,12 +14,76 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
+// Prometheus Metrics Instrumentation for Grafana Sync
+const client = require('prom-client');
+const register = new client.Registry();
+client.collectDefaultMetrics({ register });
+
+const httpRequestCounter = new client.Counter({
+  name: 'portfolio_http_requests_total',
+  help: 'Total HTTP requests on Akarsh Portfolio Web Application',
+  labelNames: ['method', 'route', 'status_code'],
+  registers: [register]
+});
+
+const authEventCounter = new client.Counter({
+  name: 'portfolio_auth_events_total',
+  help: 'Total authentication and MFA events on Web Application',
+  labelNames: ['type', 'status'],
+  registers: [register]
+});
+
+const paymentEventCounter = new client.Counter({
+  name: 'portfolio_payment_transactions_total',
+  help: 'Total Razorpay transactions and orders generated',
+  labelNames: ['status'],
+  registers: [register]
+});
+
+let totalRequests = 0;
+let totalLogins = 0;
+let totalPayments = 0;
+
 // In-memory user database for demonstration (in production, use PostgreSQL/MongoDB)
 // Structure: { githubId: { id, username, displayName, avatar, mfaSecret, mfaEnabled, tempMfaSecret } }
 const usersDb = {};
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Metrics tracking middleware
+app.use((req, res, next) => {
+  totalRequests++;
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.route ? req.route.path : req.path,
+      status_code: res.statusCode
+    });
+  });
+  next();
+});
+
+// Prometheus Scrape Endpoint (for Grafana / Prometheus sync)
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
+// Real-Time Telemetry API for the embedded web application dashboard
+app.get('/api/telemetry', (req, res) => {
+  const mem = process.memoryUsage();
+  res.json({
+    status: 'ONLINE',
+    uptime: Math.floor(process.uptime()),
+    totalRequests,
+    totalLogins,
+    totalPayments,
+    memoryUsageMB: (mem.heapUsed / 1024 / 1024).toFixed(2),
+    activeSessions: Object.keys(usersDb).length,
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Serve frontend static files (index.html, style.css, payment.js, auth.js)
 app.use(express.static(path.join(__dirname, '..')));
@@ -271,6 +335,8 @@ app.post('/api/pay/verify', (req, res) => {
 
     // Sandbox mock verification
     if (razorpay_order_id && razorpay_order_id.startsWith('order_mock_')) {
+      totalPayments++;
+      paymentEventCounter.inc({ status: 'success' });
       return res.json({
         success: true,
         verified: true,
@@ -281,6 +347,8 @@ app.post('/api/pay/verify', (req, res) => {
     }
 
     if (!razorpayKeySecret) {
+      totalPayments++;
+      paymentEventCounter.inc({ status: 'success' });
       return res.status(400).json({ success: false, error: 'Server missing Razorpay secret key.' });
     }
 
@@ -290,6 +358,8 @@ app.post('/api/pay/verify', (req, res) => {
     const generatedSignature = hmac.digest('hex');
 
     if (generatedSignature === razorpay_signature) {
+      totalPayments++;
+      paymentEventCounter.inc({ status: 'success' });
       return res.json({
         success: true,
         verified: true,
@@ -298,6 +368,7 @@ app.post('/api/pay/verify', (req, res) => {
         message: 'Payment signature verified successfully!'
       });
     } else {
+      paymentEventCounter.inc({ status: 'failed' });
       return res.status(400).json({ success: false, verified: false, error: 'Invalid payment signature' });
     }
   } catch (err) {
